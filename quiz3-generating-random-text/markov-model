@@ -1,0 +1,69 @@
+
+/**
+ * Write a description of class MarkovZero here.
+ * 
+ * @author Duke Software
+ * @version 1.0
+ */
+
+import java.util.*;
+
+public class MarkovModel {
+    private String myText;
+    private Random myRandom;
+    private int num;
+    
+    public MarkovModel(int number) {
+        myRandom = new Random();
+        num = number;
+    }
+    
+    public void setRandom(int seed){
+        myRandom = new Random(seed);
+    }
+    
+    public void setTraining(String s){
+        myText = s.trim();
+    }
+    
+    public ArrayList<String> getFollows(String key){
+        ArrayList<String> follows = new ArrayList<String>();
+        int pos=0;
+        while(pos < myText.length()){
+            int index=myText.indexOf(key, pos);
+//my code here: 
+            if(index + key.length() == myText.length())
+            //if(index + key.length() >= myText.length()-4)
+                break;
+            else if(index!=-1){
+                follows.add(Character.toString(myText.charAt(index+key.length())));
+            }
+            else{
+                return follows;
+            }
+            pos = index+num;
+        }
+        return follows;
+    }
+    public String getRandomText(int numChars){
+        StringBuffer sb = new StringBuffer();
+        int index = myRandom.nextInt(myText.length()-num);
+        String key = myText.substring(index, index+num);
+        sb.append(key);
+        for(int i = 0; i < numChars - num; i++){
+            ArrayList<String> follows = getFollows(key);
+           /* if(follows.size()==0){
+                break;
+            }*/
+            if(follows == null){
+                System.out.println("The follows for key "+key+" is null.");
+                break;
+            }
+            index = myRandom.nextInt(follows.size());
+            String next = follows.get(index);
+            sb.append(next);
+            key = key.substring(1,num)+next;
+        }
+        return sb.toString();
+    }
+}
