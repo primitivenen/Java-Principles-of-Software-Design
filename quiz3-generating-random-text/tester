@@ -1,0 +1,38 @@
+
+/**
+ * Write a description of Tester here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+import java.util.*;
+import edu.duke.*;
+
+public class Tester {
+    public void testGetFollows(){
+        MarkovOne markov = new MarkovOne();
+        markov.setTraining("this is a test yes this is a test.");
+        ArrayList<String> wordfollow = new ArrayList<String>();
+        //wordfollow = markov.getFollows("t");
+        //wordfollow = markov.getFollows("e");
+        //wordfollow = markov.getFollows("es");
+        //wordfollow = markov.getFollows(".");
+        wordfollow = markov.getFollows("t.");
+        if(wordfollow == null){
+            System.out.println("the arraylist is null");
+            return;
+        }
+        for(int i=0; i<wordfollow.size(); i++){
+            System.out.println(wordfollow.get(i));
+        }
+        System.out.println("The size of the arraylist is "+wordfollow.size());
+    }
+    public void testGetFollowsWithFile(){
+        MarkovOne markov = new MarkovOne();     
+        FileResource fr = new FileResource();
+        markov.setTraining(fr.asString());
+        ArrayList<String> wordfollow = new ArrayList<String>();
+        wordfollow = markov.getFollows("th");
+        System.out.println("The size of the arraylist is "+wordfollow.size());
+    }
+}
