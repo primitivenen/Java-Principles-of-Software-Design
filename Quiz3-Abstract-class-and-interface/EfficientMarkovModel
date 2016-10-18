@@ -1,0 +1,124 @@
+
+/**
+ * Write a description of class MarkovZero here.
+ * 
+ * @author Duke Software
+ * @version 1.0
+ */
+
+import java.util.*;
+
+public class EfficientMarkovModel extends AbstractMarkovModel{
+    //private int num; 什么区别？super(n)
+    private HashMap<String, ArrayList<String>> map;
+    
+    /*public EfficientMarkovModel(int number) {
+        myRandom = new Random();
+        num = number;
+        map = new HashMap<String, ArrayList<String>>();
+    }*/
+    public EfficientMarkovModel(int number) {
+        super(number);
+        map = new HashMap<String, ArrayList<String>>();
+    }
+    
+    @Override    
+    public void setTraining(String s){
+        super.setTraining(s);
+        buildMap();
+        printHashMapInfo();
+    }
+    
+    public void buildMap(){
+        for(int i=0; i<myText.length()-(num-1);i++){
+            String current = myText.substring(i, i+num);
+            String follow="";
+            /*
+            if(i + num == myText.length()){
+                break;
+            }
+            follow=myText.substring(i+num, i+num+1);
+             */
+            if(i + num < myText.length()){
+            // if(i+num == myText.length()) break;为什么少1
+                follow=myText.substring(i+num, i+num+1);
+            }
+            if(map.keySet().contains(current)){
+                    map.get(current).add(follow);
+                }
+            else{
+                    ArrayList<String> list = new ArrayList<String>();
+                    list.add(follow);
+                    map.put(current, list);
+            }
+        }
+    }
+    @Override
+    public ArrayList<String> getFollows(String key){
+        return map.get(key);
+    }
+    
+    public String getRandomText(int numChars){
+        if(myText == null){
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        int index = myRandom.nextInt(myText.length()-num);
+        String key = myText.substring(index, index+num);
+        sb.append(key);
+        for(int i = 0; i < numChars - num; i++){
+            ArrayList<String> follows = getFollows(key);
+
+            if(follows == null){
+                System.out.println("The follows for key "+key+" is null.");
+                break;
+            }
+            index = myRandom.nextInt(follows.size());
+            String next = follows.get(index);
+            sb.append(next);
+            key = key.substring(1,num)+next;
+        }
+        return sb.toString();
+    }
+    
+    public void printHashMapInfo(){
+        //Print the HashMap   
+        if(map.size()<100){
+            for(String word:map.keySet()){
+                ArrayList<String> follow = map.get(word);
+                System.out.print("The key is "+word);
+                for(int i=0; i<follow.size(); i++){
+                    System.out.print("\t"+follow.get(i)+"\t");
+                }
+                System.out.println("");
+            }
+        }
+        //Print the number of keys in the HashMap
+        //Print the size of largest value in the HashMap,ie. the size of the largest Arraylist of characters
+        int max = 0;
+        ArrayList<String> maxkey = new ArrayList<String>();
+        for(String word:map.keySet()){
+            int size = map.get(word).size();
+            if(size>max){
+                max=size;
+            }
+        }
+        System.out.println("The number of keys in the HashMap is "+map.size());
+        System.out.println("The size of largest value in the HashMap is "+max);
+        //Print the keys that have the maximum size value
+        for(String word:map.keySet()){
+            int size = map.get(word).size();
+            if(size==max){
+                maxkey.add(word);
+            }
+        }
+        for(int i=0;i<maxkey.size();i++){
+            System.out.println("The keys have maximum size value is "+maxkey.get(i));
+        }
+    }
+    
+    @Override
+	public String toString(){
+		return String.format("Efficient MarkovModel of order %d",num);
+	}
+}
