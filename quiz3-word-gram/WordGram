@@ -21,11 +21,9 @@ public class WordGram {
 
     public String toString(){
         String ret = "";
-        // TODO: Complete this method
-        for(int i=0; i<myWords.length-1; i++){
-            ret += myWords[i]+" ";
+        for(int k=0; k < myWords.length; k++) {
+        	ret += myWords[k] + " ";
         }
-        ret += myWords[myWords.length-1];
         return ret.trim();
     }
 
@@ -34,14 +32,13 @@ public class WordGram {
         // TODO: Complete this method
         if(length()!=other.length()) return false;
         for(int i=0; i<myWords.length; i++){
-            if(myWords[i].equals(other.wordAt(i)))
+            if(!myWords[i].equals(other.wordAt(i)))
                 return false;
         }
         return true;
     }
 
     public WordGram shiftAdd(String word) { 
-    //this的用法不了解
         String[] newWords = new String[this.length()];
         for (int i=0;i<newWords.length-1;i++) {
         	newWords[i] = this.wordAt(i+1);
