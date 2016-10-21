@@ -21,9 +21,10 @@ public class WordGram {
 
     public String toString(){
         String ret = "";
-        for(int k=0; k < myWords.length; k++) {
+        for(int k=0; k < myWords.length-1; k++) {
         	ret += myWords[k] + " ";
         }
+        ret+=myWords[myWords.length-1];
         return ret.trim();
     }
 
