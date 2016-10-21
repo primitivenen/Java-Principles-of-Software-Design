@@ -1,0 +1,102 @@
+/**
+ * Write a description of class MarkovWordOne here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+
+import java.util.*;
+
+public class EfficientMarkovWord implements IMarkovModel {
+    private String[] myText;
+    private Random myRandom;
+    private int myOrder;
+    private HashMap<WordGram, ArrayList<String>> map;
+    
+    public EfficientMarkovWord(int num) {
+        myOrder=num;
+        map=new HashMap<WordGram, ArrayList<String>>();
+    }
+    
+    public void setRandom(int seed) {
+        myRandom = new Random(seed);
+    }
+    
+    public void setTraining(String text){
+        myText = text.split("\\s+");
+        buildMap();
+        printHashMapInfo();
+    }
+    public void printHashMapInfo(){
+        System.out.println("There are "+map.size()+" keys in the HashMap.");
+        int maxsize=0;
+        for(WordGram wg:map.keySet()){
+            maxsize=Math.max(maxsize,map.get(wg).size());
+        }
+        System.out.println("The maximum number of elements following a key is "+maxsize);
+        System.out.println("Keys with the maximum size value: ");
+        for (WordGram wg : map.keySet()) {
+        	if (map.get(wg).size()==maxsize) {
+        		System.out.print(wg);
+        		System.out.println(" (The follow words: " + map.get(wg) + ")");
+        	}
+        }
+    }
+
+    public void buildMap(){
+        for(int i=0; i<myText.length-(myOrder-1);i++){
+            WordGram wg = new WordGram(myText, i, myOrder);
+            String follow="";
+            if(i + myOrder < myText.length){
+                follow=myText[i+myOrder];
+            }
+            if(map.containsKey(wg)){
+                    map.get(wg).add(follow);
+                }
+            else{
+                    ArrayList<String> list = new ArrayList<String>();
+                    list.add(follow);
+                    map.put(wg, list);
+            }
+        }
+    }
+    
+    public String getRandomText(int numWords){
+        StringBuilder sb = new StringBuilder();
+        int index = myRandom.nextInt(myText.length-myOrder);  // random word to start with
+        WordGram wg = new WordGram(myText,index,myOrder);
+        sb.append(wg.toString());
+        sb.append(" ");
+        for(int k=0; k < numWords-myOrder; k++){
+            ArrayList<String> follows = getFollows(wg);
+            //if (follows.size() == 0) {
+            if(follows == null){
+                break;
+            }
+            index = myRandom.nextInt(follows.size());
+            String next = follows.get(index);
+            sb.append(next);
+            sb.append(" ");
+            //wg = new WordGram((sb.toString().substring(k+1,k+myOrder)+next).split(" "), k, myOrder);
+            wg = wg.shiftAdd(next);
+        }
+        
+        return sb.toString().trim();
+    }
+    
+    private ArrayList<String> getFollows(WordGram kGram) {
+        return map.get(kGram);
+    }
+
+    private int indexOf(String[] words, WordGram target, int start){
+        for(int i=start; i<words.length-myOrder; i++){
+            //   my wrong answer for(int i=start; i<words.length; i++){
+            WordGram wg = new WordGram(words,i,myOrder);
+            if(wg.equals(target)){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+}
